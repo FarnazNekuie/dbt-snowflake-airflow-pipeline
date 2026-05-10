@@ -1,0 +1,26 @@
+version: 2
+
+models:
+  - name: fct_orders
+    columns:
+      - name: order_key
+        tests:
+          - not_null
+          - unique
+
+      - name: status_code
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['O', 'F', 'P']
+
+      - name: item_discount_amount
+        tests:
+          - not_null
+
+  - name: dim_customers
+    columns:
+      - name: customer_key
+        tests:
+          - not_null
+          - unique
