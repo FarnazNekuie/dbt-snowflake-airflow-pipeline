@@ -1,30 +1,36 @@
-# dbt + Snowflake + Airflow Data Pipeline
+# dbt + Snowflake + Airflow Modern Data Platform
 
-End-to-end modern data pipeline project built using dbt, Snowflake, Airflow, and Astronomer Cosmos.
+End-to-end modern ELT and analytics engineering project built using dbt, Snowflake, Airflow, Fivetran, Astronomer Cosmos, and GitHub Actions.
 
 ---
 
 ## Project Overview
 
-This project demonstrates a production-style analytics engineering workflow including:
+This project demonstrates a production-style cloud analytics engineering workflow including:
 
-- Data ingestion from Snowflake sample datasets
+- Automated ELT ingestion using Fivetran
+- Cloud data warehousing with Snowflake
 - Staging and transformation layers using dbt
 - Fact and dimension modeling
-- Incremental processing
+- Incremental data processing
+- Source freshness monitoring
 - Data quality testing
 - Historical snapshots
-- Workflow orchestration with Airflow
-- dbt lineage and documentation generation
+- Workflow orchestration with Airflow + Cosmos
+- CI/CD validation using GitHub Actions
+- GitHub operational analytics and KPI modeling
+- dbt lineage and warehouse documentation
 
 ---
 
 ## Tech Stack
 
-- dbt Core
+- dbt Core / dbt Fusion
 - Snowflake
 - Apache Airflow
 - Astronomer Cosmos
+- Fivetran
+- GitHub Actions
 - SQL
 - Python
 - Docker
@@ -34,14 +40,21 @@ This project demonstrates a production-style analytics engineering workflow incl
 
 ## Architecture Workflow
 
-1. Source data is loaded from Snowflake sample datasets
-2. dbt staging models clean and standardize raw data
-3. Fact and dimension models transform business data
-4. Incremental models optimize processing performance
-5. dbt tests validate data quality
-6. Snapshots track historical changes
-7. Airflow orchestrates and schedules the pipeline
-8. dbt docs generate lineage and model documentation
+```text
+GitHub
+   ↓
+Fivetran
+   ↓
+Snowflake
+   ↓
+dbt Staging Models
+   ↓
+Fact & Dimension Models
+   ↓
+Analytics KPI Marts
+   ↓
+Airflow Orchestration + CI/CD
+```
 
 ---
 
@@ -50,12 +63,25 @@ This project demonstrates a production-style analytics engineering workflow incl
 ```text
 models/
 ├── staging/
+│   ├── github/
+│   │   ├── stg_github_repositories.sql
+│   │   ├── stg_github_commits.sql
+│   │   └── stg_github_workflow_runs.sql
+│   │
 │   ├── stg_tpch_orders.sql
 │   └── stg_tpch_line_items.sql
 │
 ├── marts/
 │   ├── fct_orders.sql
-│   └── dim_customers.sql
+│   ├── dim_customers.sql
+│   ├── dim_order_status.sql
+│   ├── dim_order_dates.sql
+│   ├── fct_github_workflow_runs.sql
+│   ├── fct_github_commits.sql
+│   ├── dim_github_contributors.sql
+│   ├── github_workflow_kpis.sql
+│   ├── github_commit_kpis.sql
+│   └── github_contributor_kpis.sql
 │
 snapshots/
 └── orders_snapshot.sql
@@ -64,6 +90,22 @@ macros/
 └── pricing.sql
 ```
 
+---
+
+## Key Features
+
+- Modern ELT pipeline architecture
+- Automated GitHub ingestion with Fivetran
+- Modular dbt transformations
+- Incremental model materialization
+- Reusable SQL macros
+- Airflow DAG orchestration
+- Data quality testing with dbt
+- Source freshness monitoring
+- Historical tracking using snapshots
+- GitHub Actions CI/CD validation
+- Contributor analytics and workflow monitoring
+- End-to-end cloud analytics engineering workflow
 ---
 
 ## Screenshots
@@ -80,15 +122,4 @@ macros/
 ### Snowflake Staging View
 ![Snowflake Staging View](screenshots/snowflake_staging_view.png)
 
----
 
-## Key Features
-
-- Modular dbt transformations
-- Incremental model materialization
-- Reusable SQL macros
-- Automated orchestration with Airflow
-- Data quality testing with dbt tests
-- Historical tracking using snapshots
-- End-to-end ELT workflow
-- Automated lineage documentation
