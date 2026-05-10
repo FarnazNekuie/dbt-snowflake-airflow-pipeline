@@ -38,3 +38,18 @@ models:
         tests:
           - not_null
           - unique
+
+  - name: fct_github_workflow_runs
+    columns:
+      - name: workflow_run_id
+        tests:
+          - not_null
+          - unique
+
+      - name: repository_id
+        tests:
+          - not_null
+
+      - name: workflow_duration_seconds
+        tests:
+          - not_null
