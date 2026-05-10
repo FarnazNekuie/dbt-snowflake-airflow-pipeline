@@ -24,3 +24,17 @@ models:
         tests:
           - not_null
           - unique
+
+  - name: dim_order_status
+    columns:
+      - name: status_code
+        tests:
+          - not_null
+          - unique
+
+  - name: dim_order_dates
+    columns:
+      - name: order_date
+        tests:
+          - not_null
+          - unique
