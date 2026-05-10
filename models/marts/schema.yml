@@ -53,3 +53,29 @@ models:
       - name: workflow_duration_seconds
         tests:
           - not_null
+
+  - name: fct_github_commits
+    columns:
+      - name: commit_sha
+        tests:
+          - not_null
+          - unique
+
+      - name: repository_id
+        tests:
+          - not_null
+
+      - name: commit_date
+        tests:
+          - not_null
+
+  - name: dim_github_contributors
+    columns:
+      - name: contributor_email
+        tests:
+          - not_null
+          - unique
+
+      - name: total_commits
+        tests:
+          - not_null
