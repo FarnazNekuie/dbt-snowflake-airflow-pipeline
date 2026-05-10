@@ -33,7 +33,6 @@ This project demonstrates a production-style cloud analytics engineering workflo
 - GitHub Actions
 - SQL
 - Python
-- Docker
 - Git & GitHub
 
 ---
