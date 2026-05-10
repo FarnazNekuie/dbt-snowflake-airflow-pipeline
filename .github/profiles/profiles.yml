@@ -1,0 +1,13 @@
+data_pipeline:
+  target: ci
+  outputs:
+    ci:
+      type: snowflake
+      account: dummy_account
+      user: dummy_user
+      password: dummy_password
+      role: ACCOUNTADMIN
+      database: DBT_DB
+      warehouse: DBT_WAREHOUSE
+      schema: DBT_SCHEMA
+      threads: 4
