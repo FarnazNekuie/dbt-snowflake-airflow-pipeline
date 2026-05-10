@@ -1,15 +1,45 @@
-Welcome to your new dbt project!
+# dbt + Snowflake + Airflow Data Pipeline
 
-### Using the starter project
+End-to-end modern data pipeline project built using dbt, Snowflake, Airflow, and Cosmos.
 
-Try running the following commands:
-- dbt run
-- dbt test
+## Project Overview
 
+This project demonstrates a production-style analytics engineering workflow including:
 
-### Resources:
-- Learn more about dbt [in the docs](https://docs.getdbt.com/docs/introduction)
-- Check out [Discourse](https://discourse.getdbt.com/) for commonly asked questions and answers
-- Join the [chat](https://community.getdbt.com/) on Slack for live discussions and support
-- Find [dbt events](https://events.getdbt.com) near you
-- Check out [the blog](https://blog.getdbt.com/) for the latest news on dbt's development and best practices
+- Data ingestion from Snowflake sample datasets
+- Staging and transformation layers using dbt
+- Fact and dimension modeling
+- Incremental processing
+- Data quality testing
+- Historical snapshots
+- Workflow orchestration with Airflow
+- dbt lineage and documentation generation
+
+## Tech Stack
+
+- dbt Core
+- Snowflake
+- Apache Airflow
+- Astronomer Cosmos
+- SQL
+- Python
+- Docker
+- Git & GitHub
+
+## Project Structure
+
+```text
+models/
+├── staging/
+│   ├── stg_tpch_orders.sql
+│   └── stg_tpch_line_items.sql
+│
+├── marts/
+│   ├── fct_orders.sql
+│   └── dim_customers.sql
+
+snapshots/
+└── orders_snapshot.sql
+
+macros/
+└── pricing.sql
