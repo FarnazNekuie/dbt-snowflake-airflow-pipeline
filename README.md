@@ -43,19 +43,33 @@ This project demonstrates a production-style cloud analytics engineering workflo
 ## Architecture Workflow
 
 ```text
-GitHub  ─►  Fivetran  ─►  Snowflake (raw)
+GitHub  ─►  Fivetran  ─►  Snowflake (FIVETRAN_DB.GITHUB.*)
                               │
                               ▼
-                        dbt Staging Models
+                   ┌──────────────────────┐
+                   │   Airflow + Cosmos   │
+                   └──────────┬───────────┘
                               │
-                              ▼
-                  Fact & Dimension Models (star schema)
-                              │
-                              ▼
-                       Analytics KPI Marts
-                              │
-                              ▼
-            Airflow + Cosmos Orchestration  +  GitHub Actions CI/CD
+                ┌─────────────┼─────────────┐
+                ▼             ▼             ▼
+        source_freshness  source_tests   dbt_models
+                                              │
+                                              ▼
+                              Staging views (FIVETRAN_DB.GITHUB → DBT_SCHEMA)
+                                              │
+                                              ▼
+                              Fact & Dim tables (star schema, incremental)
+                                              │
+                                              ▼
+                                     Analytics KPI Marts
+                                              │
+                                              ▼
+                                       generate_docs
+                                              │
+                                              ▼
+                              dbt docs site + lineage graph
+
+           Every PR also runs through GitHub Actions CI (dbt deps → parse → list)
 ```
 
 ---
@@ -145,7 +159,18 @@ data_pipeline/
 
 ## Orchestration (Airflow + Cosmos)
 
-`airflow_dbt/dags/dbt_dag.py` runs the **entire dbt project** as an Airflow TaskGroup using Astronomer Cosmos. Each dbt model becomes a discrete Airflow task with full lineage, retries, and observability.
+[`airflow_dbt/dags/dbt_dag.py`](airflow_dbt/dags/dbt_dag.py) runs the **entire dbt project** as an Airflow DAG using Astronomer Cosmos. Each dbt model becomes a discrete Airflow task with full lineage, retries, and observability.
+
+DAG topology (`@daily`):
+
+```text
+start
+  └─► source_freshness        (dbt source freshness — catches stale Fivetran data)
+       └─► source_tests        (dbt test --select source:* — validates raw inputs)
+            └─► dbt_models     (Cosmos TaskGroup: 29 tasks, 1 run + 1 test per dbt model + snapshot)
+                 └─► generate_docs   (dbt docs generate)
+                      └─► end
+```
 
 To run locally with the Astro CLI:
 
@@ -154,7 +179,7 @@ cd airflow_dbt
 astro dev start
 ```
 
-The DAG `dbt_snowflake_pipeline` runs `@daily` and uses a Snowflake connection named `snowflake_conn` (configure in the Airflow UI or `airflow_settings.yaml`).
+Then open http://localhost:8080 (admin/admin), add a Snowflake connection named `snowflake_conn`, and trigger the `dbt_snowflake_pipeline` DAG.
 
 ---
 
@@ -209,14 +234,27 @@ dbt docs serve
 
 ## Screenshots
 
-### Airflow DAG Orchestration
+### Airflow DAG Orchestration — 34 tasks, all green
+One Cosmos-generated Airflow task per dbt model, plus the surrounding `source_freshness`, `source_tests`, and `generate_docs` tasks.
+
 ![Airflow DAG](screenshots/airflow_dag_success.png)
 
 ### dbt Lineage Graph
+Fivetran sources → staging views → incremental fact → KPI mart.
+
 ![dbt Lineage](screenshots/dbt_lineage_graph.png)
 
-### Snowflake Fact Table
+### Snowflake KPI Marts
+The four analytics tables computed from real GitHub data.
+
+![Snowflake KPI Marts](screenshots/snowflake_kpi_marts.png)
+
+### Snowflake Fact Table (incremental)
+`fct_github_workflow_runs` with `merge` strategy on `workflow_run_id`.
+
 ![Snowflake Fact Table](screenshots/snowflake_fact_table.png)
 
 ### Snowflake Staging View
+`stg_github_commits` — raw Fivetran data cleaned and renamed.
+
 ![Snowflake Staging View](screenshots/snowflake_staging_view.png)
