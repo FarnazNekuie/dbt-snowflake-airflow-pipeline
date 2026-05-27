@@ -1,0 +1,21 @@
+version: 2
+
+snapshots:
+  - name: orders_snapshot
+    description: >
+      Type-2 snapshot of TPCH orders. Captures historical changes to
+      `status_code` and `total_price` using the `check` strategy so we can
+      reconstruct order state as of any prior load.
+    columns:
+      - name: order_key
+        description: "Natural key from TPCH ORDERS."
+        tests:
+          - not_null
+      - name: status_code
+        description: "Order status at the time the snapshot row was written."
+        tests:
+          - not_null
+      - name: total_price
+        description: "Order total price at the time the snapshot row was written."
+        tests:
+          - not_null

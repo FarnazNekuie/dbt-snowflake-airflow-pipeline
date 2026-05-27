@@ -4,14 +4,17 @@ on:
   push:
     branches:
       - main
-
   pull_request:
     branches:
       - main
 
 jobs:
   dbt-build:
+    name: Validate dbt project
     runs-on: ubuntu-latest
+
+    env:
+      DBT_PROFILES_DIR: .github/profiles
 
     steps:
       - name: Checkout repository
@@ -21,13 +24,21 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+          cache: 'pip'
 
       - name: Install dbt
         run: |
-          pip install dbt-core dbt-snowflake
+          python -m pip install --upgrade pip
+          pip install dbt-core==1.8.* dbt-snowflake==1.8.*
 
       - name: Verify dbt installation
         run: dbt --version
 
-      - name: Validate dbt project
-        run: dbt parse --profiles-dir .github/profiles
+      - name: Install dbt packages
+        run: dbt deps
+
+      - name: Parse dbt project
+        run: dbt parse
+
+      - name: List resources
+        run: dbt list --resource-type model --resource-type snapshot --resource-type test --resource-type source
