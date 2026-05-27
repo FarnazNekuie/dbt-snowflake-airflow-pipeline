@@ -1,3 +1,5 @@
+{{ config(materialized='incremental') }}
+
 with orders as (
     select * from {{ ref('stg_tpch_orders') }}
 ),
@@ -28,3 +30,10 @@ select
 from orders
 left join order_items_summary
     on orders.order_key = order_items_summary.order_key
+
+{% if is_incremental() %}
+where orders.order_date > (
+    select max(order_date)
+    from {{ this }}
+)
+{% endif %}

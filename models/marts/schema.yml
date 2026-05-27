@@ -70,6 +70,7 @@ models:
           - not_null
 
   - name: dim_github_contributors
+    description: "One row per unique commit author. Aggregates commit counts and activity dates."
     columns:
       - name: contributor_email
         tests:
@@ -77,5 +78,22 @@ models:
           - unique
 
       - name: total_commits
+        tests:
+          - not_null
+
+  - name: dim_github_repositories
+    description: "Repository-level dimension enriched with commit and workflow activity totals."
+    columns:
+      - name: repository_id
+        tests:
+          - not_null
+          - unique
+      - name: repository_name
+        tests:
+          - not_null
+      - name: total_commits
+        tests:
+          - not_null
+      - name: total_workflow_runs
         tests:
           - not_null

@@ -4,12 +4,37 @@ sources:
   - name: github
     database: FIVETRAN_DB
     schema: GITHUB
+    description: "Raw GitHub data landed in Snowflake by Fivetran."
 
     tables:
       - name: REPOSITORY
+        description: "GitHub repositories synced by Fivetran."
+        config:
+          loaded_at_field: _fivetran_synced
+          freshness:
+            warn_after:  { count: 24, period: hour }
+            error_after: { count: 48, period: hour }
 
       - name: COMMIT
+        description: "GitHub commits synced by Fivetran."
+        config:
+          loaded_at_field: _fivetran_synced
+          freshness:
+            warn_after:  { count: 24, period: hour }
+            error_after: { count: 48, period: hour }
 
       - name: USER
+        description: "GitHub users synced by Fivetran."
+        config:
+          loaded_at_field: _fivetran_synced
+          freshness:
+            warn_after:  { count: 72, period: hour }
+            error_after: { count: 168, period: hour }
 
       - name: WORKFLOW_RUN
+        description: "GitHub Actions workflow runs synced by Fivetran."
+        config:
+          loaded_at_field: _fivetran_synced
+          freshness:
+            warn_after:  { count: 6, period: hour }
+            error_after: { count: 24, period: hour }

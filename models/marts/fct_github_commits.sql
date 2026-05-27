@@ -1,5 +1,18 @@
+{{
+    config(
+        materialized='incremental',
+        unique_key='commit_sha',
+        incremental_strategy='merge',
+        on_schema_change='append_new_columns'
+    )
+}}
+
 with commits as (
     select * from {{ ref('stg_github_commits') }}
+
+    {% if is_incremental() %}
+        where _fivetran_synced > (select coalesce(max(_fivetran_synced), '1900-01-01') from {{ this }})
+    {% endif %}
 ),
 
 repositories as (

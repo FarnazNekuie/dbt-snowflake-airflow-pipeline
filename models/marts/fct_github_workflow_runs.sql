@@ -1,5 +1,18 @@
+{{
+    config(
+        materialized='incremental',
+        unique_key='workflow_run_id',
+        incremental_strategy='merge',
+        on_schema_change='append_new_columns'
+    )
+}}
+
 with workflow_runs as (
     select * from {{ ref('stg_github_workflow_runs') }}
+
+    {% if is_incremental() %}
+        where updated_at > (select coalesce(max(updated_at), '1900-01-01') from {{ this }})
+    {% endif %}
 ),
 
 repositories as (

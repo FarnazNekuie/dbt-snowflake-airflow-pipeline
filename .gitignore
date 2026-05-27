@@ -1,8 +1,9 @@
 
 target/
 dbt_packages/
+dbt_internal_packages/
 logs/
+.user.yml
 .env
 __pycache__/
 .DS_Store
-dbt_internal_packages/
